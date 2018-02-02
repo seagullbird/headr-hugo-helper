@@ -21,3 +21,4 @@ minikube: container
 		echo ---; \
 	done > tmp.yaml
 	kubectl apply -f tmp.yaml
+	rm -f tmp.yaml
