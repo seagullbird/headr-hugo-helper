@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hugo-helper
@@ -6,11 +6,9 @@ metadata:
     app: hugo-helper
 spec:
   replicas: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 50%
-      maxSurge: 1
+  selector:
+    matchLabels:
+      app: hugo-helper
   template:
     metadata:
       labels:
@@ -18,5 +16,5 @@ spec:
     spec:
       containers:
       - name: hugo-helper
-        image: hugo-helper::{{ .Commit }}
+        image: hugo-helper:{{ .Commit }}
         imagePullPolicy: IfNotPresent

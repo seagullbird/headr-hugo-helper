@@ -15,10 +15,6 @@ container: build
 	docker build -t ${IMAGE_NAME}:${COMMIT} .
 
 minikube: container
-	for t in $(shell find ./k8s/ -type f -name "*.yaml"); do \
-		cat $$t | \
-			gsed -E "s/\{\{(\s*)\.Commit(\s*)\}\}/$(RELEASE)/g" | \
-		echo ---; \
-	done > tmp.yaml
+	cat k8s/deployment.yaml | gsed -E "s/\{\{(\s*)\.Commit(\s*)\}\}/$(COMMIT)/g" > tmp.yaml
 	kubectl apply -f tmp.yaml
 	rm -f tmp.yaml
