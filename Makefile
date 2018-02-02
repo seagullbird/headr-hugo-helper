@@ -5,7 +5,7 @@ COMMIT?=$(shell git rev-parse --short HEAD)
 IMAGE_NAME?=hugo-helper
 
 clean:
-    rm -f ${APP}
+	rm -f ${APP}
 
 build: clean
 	GOOS=${GOOS} GOARCH=${GOARCH} go build \
@@ -13,4 +13,3 @@ build: clean
 
 container: build
 	docker build -t ${IMAGE_NAME}:${COMMIT} .
-
