@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/streadway/amqp"
 	"encoding/json"
+	"log"
 )
 
 func dequeueEvents(newsiteChannel chan NewSiteEvent) {
@@ -54,6 +55,6 @@ func dispatchNewSite(newsiteRaw amqp.Delivery, out chan NewSiteEvent) {
 	if err == nil {
 		out <- event
 	} else {
-		failOnError(err,"Failed to deserialize raw newsite event from queue")
+		log.Printf("Failed to deserialize raw newsite event %s from queue: %v", newsiteRaw.Body, err)
 	}
 }
