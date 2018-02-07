@@ -10,7 +10,7 @@ func dequeueEvents(newsiteChannel chan NewSiteEvent) {
 	// Connect to rabbitmq
 	uri := amqp.URI{
 		Scheme:   "amqp",
-		Host:     "historical-mandrill-rabbitmq.default.svc.cluster.local",
+		Host:     MQSERVERNAME,
 		Port:     5672,
 		Username: "user",
 		Password: "kQS5MZHEFC",
