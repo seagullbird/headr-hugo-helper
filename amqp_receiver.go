@@ -40,11 +40,8 @@ func dequeueEvents(newsiteChannel chan NewSiteEvent) {
 		nil,
 	)
 	go func() {
-		for {
-			select {
-			case newsiteRaw := <-newsiteIn:
-				dispatchNewSite(newsiteRaw, newsiteChannel)
-			}
+		for newsiteRaw := range newsiteIn {
+			dispatchNewSite(newsiteRaw, newsiteChannel)
 		}
 	}()
 }
@@ -53,6 +50,7 @@ func dispatchNewSite(newsiteRaw amqp.Delivery, out chan NewSiteEvent) {
 	var event NewSiteEvent
 	err := json.Unmarshal(newsiteRaw.Body, &event)
 	if err == nil {
+		log.Printf("Dispatching newsite event: %s", newsiteRaw.Body)
 		out <- event
 	} else {
 		log.Printf("Failed to deserialize raw newsite event %s from queue: %v", newsiteRaw.Body, err)
