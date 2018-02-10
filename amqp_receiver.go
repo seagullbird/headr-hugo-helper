@@ -6,20 +6,7 @@ import (
 	"log"
 )
 
-func dequeueEvents(newsiteChannel chan NewSiteEvent) {
-	// Connect to rabbitmq
-	uri := amqp.URI{
-		Scheme:   "amqp",
-		Host:     MQSERVERNAME,
-		Port:     5672,
-		Username: "user",
-		Password: "kQS5MZHEFC",
-		Vhost:    "/",
-	}
-	conn, err := amqp.Dial(uri.String())
-	failOnError(err, "Failed to connect to RabbitMQ")
-	defer conn.Close()
-
+func dequeueEvents(conn *amqp.Connection, newsiteChannel chan NewSiteEvent) {
 	ch, err := conn.Channel()
 	failOnError(err,"Failed to open AMQP channel")
 	newsiteQ, _ := ch.QueueDeclare(
@@ -40,8 +27,11 @@ func dequeueEvents(newsiteChannel chan NewSiteEvent) {
 		nil,
 	)
 	go func() {
-		for newsiteRaw := range newsiteIn {
-			dispatchNewSite(newsiteRaw, newsiteChannel)
+		for {
+			select {
+			case newsiteRaw := <-newsiteIn:
+				dispatchNewSite(newsiteRaw, newsiteChannel)
+			}
 		}
 	}()
 }
@@ -50,7 +40,6 @@ func dispatchNewSite(newsiteRaw amqp.Delivery, out chan NewSiteEvent) {
 	var event NewSiteEvent
 	err := json.Unmarshal(newsiteRaw.Body, &event)
 	if err == nil {
-		log.Printf("Dispatching newsite event: %s", newsiteRaw.Body)
 		out <- event
 	} else {
 		log.Printf("Failed to deserialize raw newsite event %s from queue: %v", newsiteRaw.Body, err)
