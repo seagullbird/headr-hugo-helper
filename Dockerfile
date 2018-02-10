@@ -1,4 +1,4 @@
-FROM alpine
+FROM seagullbird/hugo
 
 COPY hugo-helper /
 
