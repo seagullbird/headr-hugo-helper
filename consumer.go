@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
-	"os"
 )
 
 func consumeEvents(newsiteChannel chan NewSiteEvent) {
@@ -32,6 +32,7 @@ func generateNewSite(event NewSiteEvent) {
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
 		failOnError(err, "Failed to generate new site")
+	} else {
+		log.Println("Successfully generated new site.")
 	}
 }
-
