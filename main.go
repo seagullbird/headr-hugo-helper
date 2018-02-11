@@ -9,7 +9,7 @@ func main() {
 		Host:     MQSERVERNAME,
 		Port:     5672,
 		Username: "user",
-		Password: "kQS5MZHEFC",
+		Password: MQSERVERPWD,
 		Vhost:    "/",
 	}
 	conn, err := amqp.Dial(uri.String())

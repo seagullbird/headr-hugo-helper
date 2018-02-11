@@ -12,6 +12,7 @@ func failOnError(err error, msg string) {
 
 const (
 	MQSERVERNAME = "rabbitmq-rabbitmq"
+	MQSERVERPWD = "arJNaFrszk"
 	newsiteQueueName = "new_site"
 	dataDir = "/data"
 	sitesDir = "/data/sites"
