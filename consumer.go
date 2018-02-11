@@ -29,7 +29,6 @@ func generateNewSite(event NewSiteEvent) {
 		return
 	}
 	cmd := exec.Command("hugo", "new", "site", sitepath)
-	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
 		failOnError(err, "Failed to generate new site")
