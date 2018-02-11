@@ -11,7 +11,7 @@ func failOnError(err error, msg string) {
 }
 
 const (
-	MQSERVERNAME = "historical-mandrill-rabbitmq"
+	MQSERVERNAME = "rabbitmq-rabbitmq"
 	newsiteQueueName = "new_site"
 	dataDir = "/data"
 	sitesDir = "/data/sites"
