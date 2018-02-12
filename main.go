@@ -1,23 +1,13 @@
 package main
 
-import "github.com/streadway/amqp"
+import (
+	"github.com/seagullbird/headr-common/mq_helper"
+)
 
 func main() {
-	// Connect to rabbitmq
-	uri := amqp.URI{
-		Scheme:   "amqp",
-		Host:     MQSERVERNAME,
-		Port:     5672,
-		Username: "user",
-		Password: MQSERVERPWD,
-		Vhost:    "/",
-	}
-	conn, err := amqp.Dial(uri.String())
-	failOnError(err, "Failed to connect to RabbitMQ")
+	receiver := mq_helper.NewReceiver()
+	receiver.RegisterListener(newsiteQueueName, generateNewSite)
 
-	newsiteChannel := make(chan NewSiteEvent)
 	forever := make(chan bool)
-	dequeueEvents(conn, newsiteChannel)
-	consumeEvents(newsiteChannel)
 	<-forever
 }
