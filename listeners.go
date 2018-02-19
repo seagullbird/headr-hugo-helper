@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"github.com/go-kit/kit/log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -18,21 +18,21 @@ func makegenerateNewSiteListener(logger log.Logger) receive.Listener {
 		var event mq.NewSiteEvent
 		err := json.Unmarshal(delivery.Body, &event)
 		if err != nil {
-			log.Println("Failed to unmarshal event:", err, "raw message:", delivery.Body)
+			logger.Log("error_desc", "Failed to unmarshal event","error", err, "raw-message:", delivery.Body)
 			return
 		}
 
-		log.Println("Received newsite event:", event)
+		logger.Log("info", "Received newsite event", "event", event)
 		sitepath := filepath.Join(sitesDir, event.Email, event.SiteName)
 
 		if _, err := os.Stat(sitepath); err == nil || !os.IsNotExist(err) {
-			log.Println(fmt.Sprintf("Path %s already exists.", sitepath))
+			logger.Log("info", fmt.Sprintf("Path %s already exists.", sitepath))
 			return
 		}
 		cmd := exec.Command("hugo", "new", "site", sitepath)
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
-			log.Println( "Failed to generate new site", err)
+			logger.Log("error_desc",  "Failed to generate new site", "error", err)
 		}
 	}
 }
