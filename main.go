@@ -31,7 +31,7 @@ func main() {
 		logger.Log("error_desc", "receive.NewReceiver failed", "error", err)
 		return
 	}
-	receiver.RegisterListener(newsiteQueueName, makegenerateNewSiteListener(logger))
+	receiver.RegisterListener(newsiteQueueName, makeGenerateNewSiteListener(logger))
 
 	forever := make(chan bool)
 	<-forever
