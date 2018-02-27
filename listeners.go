@@ -15,7 +15,7 @@ import (
 
 func makeGenerateNewSiteListener(logger log.Logger) receive.Listener {
 	return func(delivery amqp.Delivery) {
-		var event mq.NewSiteEvent
+		var event mq.SiteUpdatedEvent
 		err := json.Unmarshal(delivery.Body, &event)
 		if err != nil {
 			logger.Log("error_desc", "Failed to unmarshal event","error", err, "raw-message:", delivery.Body)
@@ -35,7 +35,7 @@ func makeGenerateNewSiteListener(logger log.Logger) receive.Listener {
 			logger.Log("error_desc",  "failed to generate new site source", "error", err)
 			return
 		}
-		if err := reGenerate(siteSourcePath, sitePublicPath, initialThemeName); err != nil {
+		if err := reGenerate(siteSourcePath, sitePublicPath, event.Theme); err != nil {
 			logger.Log("error_desc",  "failed to generate new site public", "error", err)
 			return
 		}
@@ -44,7 +44,7 @@ func makeGenerateNewSiteListener(logger log.Logger) receive.Listener {
 
 func makeReGenerateListener(logger log.Logger) receive.Listener {
 	return func(delivery amqp.Delivery) {
-		var event mq.ReGenerateEvent
+		var event mq.SiteUpdatedEvent
 		err := json.Unmarshal(delivery.Body, &event)
 		if err != nil {
 			logger.Log("error_desc", "Failed to unmarshal event","error", err, "raw-message:", delivery.Body)
