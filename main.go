@@ -32,6 +32,7 @@ func main() {
 		return
 	}
 	receiver.RegisterListener(newsiteQueueName, makeGenerateNewSiteListener(logger))
+	receiver.RegisterListener(regenerateQueueName, makeReGenerateListener(logger))
 
 	forever := make(chan bool)
 	<-forever

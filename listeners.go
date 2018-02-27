@@ -35,17 +35,41 @@ func makeGenerateNewSiteListener(logger log.Logger) receive.Listener {
 			logger.Log("error_desc",  "failed to generate new site source", "error", err)
 			return
 		}
-		if err := runCommand(
-			"hugo",
-			"--source", siteSourcePath,
-			"--destination", sitePublicPath,
-			"--themesDir", themesDir,
-			"--theme", initialThemeName,
-			"--config", filepath.Join(configsDir, initialThemeName, "config.toml")); err != nil {
+		if err := reGenerate(siteSourcePath, sitePublicPath, initialThemeName); err != nil {
 			logger.Log("error_desc",  "failed to generate new site public", "error", err)
 			return
 		}
 	}
+}
+
+func makeReGenerateListener(logger log.Logger) receive.Listener {
+	return func(delivery amqp.Delivery) {
+		var event mq.ReGenerateEvent
+		err := json.Unmarshal(delivery.Body, &event)
+		if err != nil {
+			logger.Log("error_desc", "Failed to unmarshal event","error", err, "raw-message:", delivery.Body)
+			return
+		}
+
+		logger.Log("info", "Received regenerate event", "event", event)
+		sitepath := filepath.Join(sitesDir, event.Email, event.SiteName)
+		siteSourcePath := filepath.Join(sitepath, "source")
+		sitePublicPath := filepath.Join(sitepath, "public")
+		if err := reGenerate(siteSourcePath, sitePublicPath, event.Theme); err != nil {
+			logger.Log("error_desc",  "failed to re-generate site", "error", err)
+			return
+		}
+	}
+}
+
+func reGenerate(source, destination, theme string) error {
+	return runCommand(
+		"hugo",
+		"--source", source,
+		"--destination", destination,
+		"--themesDir", themesDir,
+		"--theme", theme,
+		"--config", filepath.Join(configsDir, theme, "config.toml"))
 }
 
 func runCommand(command string, arg ...string) error {
