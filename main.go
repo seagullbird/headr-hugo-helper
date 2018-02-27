@@ -5,6 +5,8 @@ import (
 	"github.com/seagullbird/headr-common/mq/receive"
 	"github.com/go-kit/kit/log"
 	"os"
+	"github.com/seagullbird/headr-hugo-helper/listeners"
+	"github.com/seagullbird/headr-hugo-helper/config"
 )
 
 func main() {
@@ -31,8 +33,8 @@ func main() {
 		logger.Log("error_desc", "receive.NewReceiver failed", "error", err)
 		return
 	}
-	receiver.RegisterListener(newsiteQueueName, makeGenerateNewSiteListener(logger))
-	receiver.RegisterListener(regenerateQueueName, makeReGenerateListener(logger))
+	receiver.RegisterListener(config.NewsiteQueueName, listeners.MakeGenerateNewSiteListener(logger))
+	receiver.RegisterListener(config.RegenerateQueueName, listeners.MakeReGenerateListener(logger))
 
 	forever := make(chan bool)
 	<-forever

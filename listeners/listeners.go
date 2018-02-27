@@ -1,4 +1,4 @@
-package main
+package listeners
 
 import (
 	"github.com/go-kit/kit/log"
@@ -10,10 +10,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/seagullbird/headr-common/mq"
+	"github.com/seagullbird/headr-hugo-helper/config"
 )
 
-
-func makeGenerateNewSiteListener(logger log.Logger) receive.Listener {
+// MakeGenerateNewSiteListener returns a Listener listening to new_site queue
+func MakeGenerateNewSiteListener(logger log.Logger) receive.Listener {
 	return func(delivery amqp.Delivery) {
 		var event mq.SiteUpdatedEvent
 		err := json.Unmarshal(delivery.Body, &event)
@@ -23,7 +24,7 @@ func makeGenerateNewSiteListener(logger log.Logger) receive.Listener {
 		}
 
 		logger.Log("info", "Received newsite event", "event", event)
-		sitepath := filepath.Join(sitesDir, event.Email, event.SiteName)
+		sitepath := filepath.Join(config.SitesDir, event.Email, event.SiteName)
 		siteSourcePath := filepath.Join(sitepath, "source")
 		sitePublicPath := filepath.Join(sitepath, "public")
 
@@ -42,7 +43,8 @@ func makeGenerateNewSiteListener(logger log.Logger) receive.Listener {
 	}
 }
 
-func makeReGenerateListener(logger log.Logger) receive.Listener {
+// MakeReGenerateListener returns a Listener listening to re_generate queue
+func MakeReGenerateListener(logger log.Logger) receive.Listener {
 	return func(delivery amqp.Delivery) {
 		var event mq.SiteUpdatedEvent
 		err := json.Unmarshal(delivery.Body, &event)
@@ -52,7 +54,7 @@ func makeReGenerateListener(logger log.Logger) receive.Listener {
 		}
 
 		logger.Log("info", "Received regenerate event", "event", event)
-		sitepath := filepath.Join(sitesDir, event.Email, event.SiteName)
+		sitepath := filepath.Join(config.SitesDir, event.Email, event.SiteName)
 		siteSourcePath := filepath.Join(sitepath, "source")
 		sitePublicPath := filepath.Join(sitepath, "public")
 		if err := reGenerate(siteSourcePath, sitePublicPath, event.Theme); err != nil {
@@ -67,9 +69,9 @@ func reGenerate(source, destination, theme string) error {
 		"hugo",
 		"--source", source,
 		"--destination", destination,
-		"--themesDir", themesDir,
+		"--themesDir", config.ThemesDir,
 		"--theme", theme,
-		"--config", filepath.Join(configsDir, theme, "config.toml"))
+		"--config", filepath.Join(config.ConfigsDir, theme, "config.toml"))
 }
 
 func runCommand(command string, arg ...string) error {

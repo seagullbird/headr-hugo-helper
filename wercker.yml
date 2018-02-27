@@ -1,0 +1,52 @@
+box:
+  id: golang:1.9
+
+services:
+  - rabbitmq:3.7.2
+
+build:
+  steps:
+    - wercker/golint:
+      exclude: vendor
+    - setup-go-workspace:
+        package-dir: github.com/seagullbird/headr-hugo-helper
+    - script:
+        name: env
+        code: env
+    - script:
+        name: "Download hugo"
+        code: |
+          if [ -f "$WERCKER_CACHE_DIR/hugo" ]; then
+            debug "hugo binary found in cache"
+            cp $WERCKER_CACHE_DIR/hugo /usr/local/bin
+          else
+            debug "hugo binary not found in cache, will download"
+            wget https://github.com/gohugoio/hugo/releases/download/v0.36.1/hugo_0.36.1_Linux-64bit.tar.gz &&
+            tar -C /usr/local/bin -xzvf hugo_0.36.1_Linux-64bit.tar.gz &&
+            cp $(which hugo) $WERCKER_CACHE_DIR
+          fi
+          hugo version
+    - script:
+        name: "Setup test environment"
+        code: |
+          if [ -f "$WERCKER_CACHE_DIR/environ.tar.gz" ]; then
+            debug "environ.tar.gz found, unzipping..."
+            tar -C / -xzf $WERCKER_CACHE_DIR/environ.tar.gz
+          else
+            debug "environ.tar.gz not found, creating..."
+            mkdir -p /data/sites
+            mkdir -p /data/themes
+            mkdir -p /data/configs/test_theme
+            git clone https://github.com/budparr/gohugo-theme-ananke.git /data/themes/test_theme --depth=1
+            cp /data/themes/test_theme/exampleSite/config.toml /data/configs/test_theme
+            tar -czvf $WERCKER_CACHE_DIR/environ.tar.gz /data
+          fi
+    - script:
+        name: "Wait for RabbitMQ connection"
+        code: |
+          while ! $(python -c "import socket; soc=socket.socket(); soc.connect(('$RABBITMQ_PORT_5672_TCP_ADDR', $RABBITMQ_PORT_5672_TCP_PORT))"); \
+          do sleep 3; done
+    - script:
+        name: go test
+        code: |
+          go test -v ./...

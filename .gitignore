@@ -2,3 +2,4 @@
 .idea
 hugo-helper
 tmp.yaml
+.wercker
