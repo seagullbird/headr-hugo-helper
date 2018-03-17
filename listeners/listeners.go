@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/seagullbird/headr-common/mq"
 	"github.com/seagullbird/headr-hugo-helper/config"
+	"strconv"
 )
 
 // MakeGenerateNewSiteListener returns a Listener listening to new_site queue
@@ -24,7 +25,7 @@ func MakeGenerateNewSiteListener(logger log.Logger) receive.Listener {
 		}
 
 		logger.Log("info", "Received newsite event", "event", event)
-		sitepath := filepath.Join(config.SitesDir, event.Email, event.SiteName)
+		sitepath := filepath.Join(config.SitesDir, strconv.Itoa(int(event.SiteId)))
 		siteSourcePath := filepath.Join(sitepath, "source")
 		sitePublicPath := filepath.Join(sitepath, "public")
 
@@ -54,7 +55,7 @@ func MakeReGenerateListener(logger log.Logger) receive.Listener {
 		}
 
 		logger.Log("info", "Received regenerate event", "event", event)
-		sitepath := filepath.Join(config.SitesDir, event.Email, event.SiteName)
+		sitepath := filepath.Join(config.SitesDir, strconv.Itoa(int(event.SiteId)))
 		siteSourcePath := filepath.Join(sitepath, "source")
 		sitePublicPath := filepath.Join(sitepath, "public")
 		if err := reGenerate(siteSourcePath, sitePublicPath, event.Theme); err != nil {

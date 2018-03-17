@@ -11,6 +11,7 @@ import (
 	"github.com/seagullbird/headr-hugo-helper/listeners"
 	"github.com/seagullbird/headr-hugo-helper/config"
 	"path/filepath"
+	"strconv"
 )
 
 func TestListeners(t *testing.T) {
@@ -53,12 +54,10 @@ func TestListeners(t *testing.T) {
 
 
 	// Dispatch a NewSite Message
-	fakeEmail := "test@test.com"
-	fakeSiteName := "listeners_test"
+	fakeSiteId := 123
 	fakeTheme := "test_theme"
 	msg := mq.SiteUpdatedEvent{
-		Email: fakeEmail,
-		SiteName: fakeSiteName,
+		SiteId: uint(fakeSiteId),
 		Theme:	fakeTheme,
 		ReceivedOn: time.Now().Unix(),
 	}
@@ -69,7 +68,7 @@ func TestListeners(t *testing.T) {
 
 	// Wait for the Message to be produced
 	time.Sleep(time.Second)
-	expectedSitePath := filepath.Join(config.SitesDir, fakeEmail, fakeSiteName)
+	expectedSitePath := filepath.Join(config.SitesDir, strconv.Itoa(int(fakeSiteId)))
 	expectedSiteSourcePath := filepath.Join(expectedSitePath, "source")
 	expectedSitePublicPath := filepath.Join(expectedSitePath, "public")
 

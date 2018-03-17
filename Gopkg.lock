@@ -28,8 +28,8 @@
 [[projects]]
   branch = "master"
   name = "github.com/seagullbird/headr-common"
-  packages = ["mq","mq/receive"]
-  revision = "05dc26f6f33f5b257d4c501526eea862b53bec27"
+  packages = ["mq","mq/dispatch","mq/receive"]
+  revision = "0c60ed9f5a1b3bf3c07eea60536bd3cdd41fa90a"
 
 [[projects]]
   branch = "master"
@@ -40,6 +40,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2e0db748c8f88a77b4ad7052f860d7fc6448db504ada3807bb8de76c7ad118e0"
+  inputs-digest = "ca05225eb8c79d88e8bb23e78d52c48f216921b2eda195436d935f5e89ef855b"
   solver-name = "gps-cdcl"
   solver-version = 1
