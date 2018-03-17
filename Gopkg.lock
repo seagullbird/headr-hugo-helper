@@ -29,7 +29,7 @@
   branch = "master"
   name = "github.com/seagullbird/headr-common"
   packages = ["mq","mq/dispatch","mq/receive"]
-  revision = "0c60ed9f5a1b3bf3c07eea60536bd3cdd41fa90a"
+  revision = "229c1f8f1a8f2045aaa5e38d721c49db4ecb257b"
 
 [[projects]]
   branch = "master"
