@@ -5,6 +5,7 @@ import (
 	"os"
 	"github.com/go-kit/kit/log"
 	"github.com/seagullbird/headr-common/mq"
+	"github.com/seagullbird/headr-common/mq/client"
 	"github.com/seagullbird/headr-common/mq/dispatch"
 	"time"
 	"github.com/seagullbird/headr-common/mq/receive"
@@ -30,22 +31,13 @@ func TestListeners(t *testing.T) {
 	)
 
 	// New dispatcher
-	dConn, err := mq.MakeConn(servername, username, passwd)
-	if err != nil {
-		panic(err)
-	}
-	dispatcher, err := dispatch.NewDispatcher(dConn, logger)
+	dispatcher, err := dispatch.NewDispatcher(client.New(servername, username, passwd), logger)
 	if err != nil {
 		panic(err)
 	}
 
 	// New receiver
-	rConn, err := mq.MakeConn(servername, username, passwd)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	receiver, err := receive.NewReceiver(rConn, logger)
+	receiver, err := receive.NewReceiver(client.New(servername, username, passwd), logger)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -57,7 +49,7 @@ func TestListeners(t *testing.T) {
 	fakeSiteId := 123
 	fakeTheme := "test_theme"
 	msg := mq.SiteUpdatedEvent{
-		SiteId: uint(fakeSiteId),
+		SiteID: uint(fakeSiteId),
 		Theme:	fakeTheme,
 		ReceivedOn: time.Now().Unix(),
 	}

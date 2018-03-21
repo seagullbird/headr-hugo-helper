@@ -25,7 +25,7 @@ func MakeGenerateNewSiteListener(logger log.Logger) receive.Listener {
 		}
 
 		logger.Log("info", "Received newsite event", "event", event)
-		sitepath := filepath.Join(config.SitesDir, strconv.Itoa(int(event.SiteId)))
+		sitepath := filepath.Join(config.SitesDir, strconv.Itoa(int(event.SiteID)))
 		siteSourcePath := filepath.Join(sitepath, "source")
 		sitePublicPath := filepath.Join(sitepath, "public")
 
@@ -55,7 +55,7 @@ func MakeReGenerateListener(logger log.Logger) receive.Listener {
 		}
 
 		logger.Log("info", "Received regenerate event", "event", event)
-		sitepath := filepath.Join(config.SitesDir, strconv.Itoa(int(event.SiteId)))
+		sitepath := filepath.Join(config.SitesDir, strconv.Itoa(int(event.SiteID)))
 		siteSourcePath := filepath.Join(sitepath, "source")
 		sitePublicPath := filepath.Join(sitepath, "public")
 		if err := reGenerate(siteSourcePath, sitePublicPath, event.Theme); err != nil {

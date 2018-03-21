@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/seagullbird/headr-common/mq"
+	"github.com/seagullbird/headr-common/mq/client"
 	"github.com/seagullbird/headr-common/mq/receive"
 	"github.com/go-kit/kit/log"
 	"os"
@@ -23,12 +24,7 @@ func main() {
 		passwd     = mq.MQSERVERPWD
 	)
 
-	conn, err := mq.MakeConn(servername, username, passwd)
-	if err != nil {
-		logger.Log("error_desc", "mq.MakeConn failed", "error", err)
-		return
-	}
-	receiver, err := receive.NewReceiver(conn, logger)
+	receiver, err := receive.NewReceiver(client.New(servername, username, passwd), logger)
 	if err != nil {
 		logger.Log("error_desc", "receive.NewReceiver failed", "error", err)
 		return
