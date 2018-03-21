@@ -1,4 +1,4 @@
-APP?=hugo-helper
+APP?=./build/hugo-helper
 GOARCH?=amd64
 GOOS?=linux
 COMMIT?=$(shell git rev-parse --short HEAD)
@@ -12,7 +12,7 @@ build: clean
 	-o ${APP}
 
 container: build
-	docker build -t ${IMAGE_NAME}:${COMMIT} .
+	docker build -t ${IMAGE_NAME}:${COMMIT} ./build/
 
 minikube: container
 	cat k8s/deployment.yaml | gsed -E "s/\{\{(\s*)\.Commit(\s*)\}\}/$(COMMIT)/g" > tmp.yaml
