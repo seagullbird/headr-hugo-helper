@@ -1,18 +1,18 @@
 package listeners_test
 
 import (
-	"testing"
-	"os"
 	"github.com/go-kit/kit/log"
 	"github.com/seagullbird/headr-common/mq"
 	"github.com/seagullbird/headr-common/mq/client"
 	"github.com/seagullbird/headr-common/mq/dispatch"
-	"time"
 	"github.com/seagullbird/headr-common/mq/receive"
-	"github.com/seagullbird/headr-hugo-helper/listeners"
 	"github.com/seagullbird/headr-hugo-helper/config"
+	"github.com/seagullbird/headr-hugo-helper/listeners"
+	"os"
 	"path/filepath"
 	"strconv"
+	"testing"
+	"time"
 )
 
 func TestListeners(t *testing.T) {
@@ -44,13 +44,12 @@ func TestListeners(t *testing.T) {
 	receiver.RegisterListener(config.NewsiteQueueName, listeners.MakeGenerateNewSiteListener(logger))
 	receiver.RegisterListener(config.RegenerateQueueName, listeners.MakeReGenerateListener(logger))
 
-
 	// Dispatch a NewSite Message
 	fakeSiteId := 123
 	fakeTheme := "test_theme"
 	msg := mq.SiteUpdatedEvent{
-		SiteID: uint(fakeSiteId),
-		Theme:	fakeTheme,
+		SiteID:     uint(fakeSiteId),
+		Theme:      fakeTheme,
 		ReceivedOn: time.Now().Unix(),
 	}
 	err = dispatcher.DispatchMessage(config.NewsiteQueueName, msg)

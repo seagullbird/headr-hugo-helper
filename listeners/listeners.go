@@ -1,16 +1,16 @@
 package listeners
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/go-kit/kit/log"
+	"github.com/seagullbird/headr-common/mq"
+	"github.com/seagullbird/headr-common/mq/receive"
+	"github.com/seagullbird/headr-hugo-helper/config"
+	"github.com/streadway/amqp"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"github.com/seagullbird/headr-common/mq/receive"
-	"github.com/streadway/amqp"
-	"encoding/json"
-	"fmt"
-	"github.com/seagullbird/headr-common/mq"
-	"github.com/seagullbird/headr-hugo-helper/config"
 	"strconv"
 )
 
@@ -20,7 +20,7 @@ func MakeGenerateNewSiteListener(logger log.Logger) receive.Listener {
 		var event mq.SiteUpdatedEvent
 		err := json.Unmarshal(delivery.Body, &event)
 		if err != nil {
-			logger.Log("error_desc", "Failed to unmarshal event","error", err, "raw-message:", delivery.Body)
+			logger.Log("error_desc", "Failed to unmarshal event", "error", err, "raw-message:", delivery.Body)
 			return
 		}
 
@@ -28,17 +28,22 @@ func MakeGenerateNewSiteListener(logger log.Logger) receive.Listener {
 		sitepath := filepath.Join(config.SitesDir, strconv.Itoa(int(event.SiteID)))
 		siteSourcePath := filepath.Join(sitepath, "source")
 		sitePublicPath := filepath.Join(sitepath, "public")
+		publicConfigPath := filepath.Join(config.ConfigsDir, event.Theme, "config.json")
 
 		if _, err := os.Stat(sitepath); err == nil || !os.IsNotExist(err) {
 			logger.Log("info", fmt.Sprintf("Path %s already exists.", sitepath))
 			return
 		}
-		if err := runCommand("hugo", "new", "site", siteSourcePath); err != nil {
-			logger.Log("error_desc",  "failed to generate new site source", "error", err)
+		if err := runCommand("hugo", "new", "site", siteSourcePath, "--format", "json"); err != nil {
+			logger.Log("error_desc", "failed to generate new site source", "error", err)
 			return
 		}
-		if err := reGenerate(siteSourcePath, sitePublicPath, event.Theme); err != nil {
-			logger.Log("error_desc",  "failed to generate new site public", "error", err)
+		if err := runCommand("cp", publicConfigPath, siteSourcePath); err != nil {
+			logger.Log("error_desc", "failed to cp site config", "error", err)
+			return
+		}
+		if err := reGenerate(siteSourcePath, sitePublicPath); err != nil {
+			logger.Log("error_desc", "failed to generate new site public", "error", err)
 			return
 		}
 	}
@@ -50,7 +55,7 @@ func MakeReGenerateListener(logger log.Logger) receive.Listener {
 		var event mq.SiteUpdatedEvent
 		err := json.Unmarshal(delivery.Body, &event)
 		if err != nil {
-			logger.Log("error_desc", "Failed to unmarshal event","error", err, "raw-message:", delivery.Body)
+			logger.Log("error_desc", "Failed to unmarshal event", "error", err, "raw-message:", delivery.Body)
 			return
 		}
 
@@ -58,21 +63,15 @@ func MakeReGenerateListener(logger log.Logger) receive.Listener {
 		sitepath := filepath.Join(config.SitesDir, strconv.Itoa(int(event.SiteID)))
 		siteSourcePath := filepath.Join(sitepath, "source")
 		sitePublicPath := filepath.Join(sitepath, "public")
-		if err := reGenerate(siteSourcePath, sitePublicPath, event.Theme); err != nil {
-			logger.Log("error_desc",  "failed to re-generate site", "error", err)
+		if err := reGenerate(siteSourcePath, sitePublicPath); err != nil {
+			logger.Log("error_desc", "failed to re-generate site", "error", err)
 			return
 		}
 	}
 }
 
-func reGenerate(source, destination, theme string) error {
-	return runCommand(
-		"hugo",
-		"--source", source,
-		"--destination", destination,
-		"--themesDir", config.ThemesDir,
-		"--theme", theme,
-		"--config", filepath.Join(config.ConfigsDir, theme, "config.toml"))
+func reGenerate(source, destination string) error {
+	return runCommand("hugo", "--source", source, "--destination", destination)
 }
 
 func runCommand(command string, arg ...string) error {

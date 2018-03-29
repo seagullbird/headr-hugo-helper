@@ -1,13 +1,13 @@
 package main
 
 import (
+	"github.com/go-kit/kit/log"
 	"github.com/seagullbird/headr-common/mq"
 	"github.com/seagullbird/headr-common/mq/client"
 	"github.com/seagullbird/headr-common/mq/receive"
-	"github.com/go-kit/kit/log"
-	"os"
-	"github.com/seagullbird/headr-hugo-helper/listeners"
 	"github.com/seagullbird/headr-hugo-helper/config"
+	"github.com/seagullbird/headr-hugo-helper/listeners"
+	"os"
 )
 
 func main() {
