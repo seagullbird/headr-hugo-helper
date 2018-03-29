@@ -38,7 +38,7 @@ build:
             mkdir -p /data/themes
             mkdir -p /data/configs/test_theme
             git clone https://github.com/budparr/gohugo-theme-ananke.git /data/themes/test_theme --depth=1
-            cp /data/themes/test_theme/exampleSite/config.toml /data/configs/test_theme
+            echo '{"baseurl":"/", "theme": "test_theme", "themesDir": "../../../themes"}' > /data/configs/test_theme/config.json
             tar -czvf $WERCKER_CACHE_DIR/environ.tar.gz /data
           fi
     - script:
