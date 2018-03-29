@@ -29,18 +29,13 @@ build:
     - script:
         name: "Setup test environment"
         code: |
-          if [ -f "$WERCKER_CACHE_DIR/environ.tar.gz" ]; then
-            debug "environ.tar.gz found, unzipping..."
-            tar -C / -xzf $WERCKER_CACHE_DIR/environ.tar.gz
-          else
-            debug "environ.tar.gz not found, creating..."
-            mkdir -p /data/sites
-            mkdir -p /data/themes
-            mkdir -p /data/configs/test_theme
-            git clone https://github.com/budparr/gohugo-theme-ananke.git /data/themes/test_theme --depth=1
-            echo '{"baseurl":"/", "theme": "test_theme", "themesDir": "../../../themes"}' > /data/configs/test_theme/config.json
-            tar -czvf $WERCKER_CACHE_DIR/environ.tar.gz /data
-          fi
+          debug "environ.tar.gz not found, creating..."
+          mkdir -p /data/sites
+          mkdir -p /data/themes
+          mkdir -p /data/configs/test_theme
+          git clone https://github.com/budparr/gohugo-theme-ananke.git /data/themes/test_theme --depth=1
+          echo '{"baseurl":"/", "theme": "test_theme", "themesDir": "../../../themes"}' > /data/configs/test_theme/config.json
+          tar -czvf $WERCKER_CACHE_DIR/environ.tar.gz /data
     - script:
         name: "Wait for RabbitMQ connection"
         code: |
