@@ -50,3 +50,38 @@ build:
         name: go test
         code: |
           go test -v ./...
+    - script:
+            name: "go build"
+            code: make build
+        - script:
+            name: "Copy output files"
+            code: |
+              cp build/hugo-helper $WERCKER_OUTPUT_DIR
+              cp k8s/k8s-deploy.yaml.template $WERCKER_OUTPUT_DIR
+
+push-image:
+  steps:
+    - script:
+      name: "Move Kubernetes files"
+      code: |
+        mv k8s-deploy.yaml.template $WERCKER_OUTPUT_DIR
+    - internal/docker-push:
+        working-dir: $WERCKER_ROOT
+        cmd: ./hugo-helper
+        tag: $WERCKER_GIT_COMMIT
+        repository: $GCR_TAG
+        registry: $GCR_HOST/v2
+        username: _json_key
+        password: $GCP_KEY_JSON
+
+deploy-to-kubernetes:
+  steps:
+    - bash-template
+    - riceo/kubectl:
+        name: "Deploy to Kubernetes"
+        server: $KUBERNETES_MASTER
+        gcloud-key-json: $GCP_KEY_JSON
+        gke-cluster-name: $GKE_CLUSTER_NAME
+        gke-cluster-zone: $GKE_CLUSTER_ZONE
+        gke-cluster-project: $GKE_CLUSTER_PROJECT
+        command: apply -f k8s-deploy.yaml

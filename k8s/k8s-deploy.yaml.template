@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hugo-helper
+  labels:
+    app: hugo-helper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hugo-helper
+  template:
+    metadata:
+      labels:
+        app: hugo-helper
+    spec:
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+         claimName: data-claim
+      containers:
+      - name: hugo-helper
+        image: ${GCR_TAG}:${WERCKER_GIT_COMMIT}
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - mountPath: "/data"
+            name: data
