@@ -51,13 +51,13 @@ build:
         code: |
           go test -v ./...
     - script:
-            name: "go build"
-            code: make build
-        - script:
-            name: "Copy output files"
-            code: |
-              cp build/hugo-helper $WERCKER_OUTPUT_DIR
-              cp k8s/k8s-deploy.yaml.template $WERCKER_OUTPUT_DIR
+        name: "go build"
+        code: make build
+    - script:
+        name: "Copy output files"
+        code: |
+          cp build/hugo-helper $WERCKER_OUTPUT_DIR
+          cp k8s/k8s-deploy.yaml.template $WERCKER_OUTPUT_DIR
 
 push-image:
   steps:
