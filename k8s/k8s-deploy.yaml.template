@@ -17,7 +17,7 @@ spec:
       volumes:
       - name: data
         persistentVolumeClaim:
-         claimName: data-claim
+         claimName: nfs
       containers:
       - name: hugo-helper
         image: ${GCR_TAG}:${WERCKER_GIT_COMMIT}
