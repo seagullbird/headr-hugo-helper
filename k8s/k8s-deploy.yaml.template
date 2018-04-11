@@ -21,7 +21,7 @@ spec:
       containers:
       - name: hugo-helper
         image: ${GCR_TAG}:${WERCKER_GIT_COMMIT}
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         volumeMounts:
           - mountPath: "/data"
             name: data
