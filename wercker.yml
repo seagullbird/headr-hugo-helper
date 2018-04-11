@@ -67,6 +67,7 @@ push-image:
         mv k8s-deploy.yaml.template $WERCKER_OUTPUT_DIR
     - internal/docker-push:
         working-dir: $WERCKER_ROOT
+        env: RABBITMQ_SERVER=${RABBITMQ_SERVER} RABBITMQ_USER=${RABBITMQ_USER} RABBITMQ_PASS=${RABBITMQ_PASS}
         cmd: ./hugo-helper
         tag: $WERCKER_GIT_COMMIT
         repository: $GCR_TAG

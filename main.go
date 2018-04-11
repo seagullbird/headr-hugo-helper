@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/go-kit/kit/log"
-	"github.com/seagullbird/headr-common/mq"
 	"github.com/seagullbird/headr-common/mq/client"
 	"github.com/seagullbird/headr-common/mq/receive"
 	"github.com/seagullbird/headr-hugo-helper/config"
@@ -19,9 +18,9 @@ func main() {
 	}
 
 	var (
-		servername = mq.MQSERVERNAME
-		username   = mq.MQUSERNAME
-		passwd     = mq.MQSERVERPWD
+		servername = os.Getenv("RABBITMQ_SERVER")
+		username   = os.Getenv("RABBITMQ_USER")
+		passwd     = os.Getenv("RABBITMQ_PASS")
 	)
 
 	receiver, err := receive.NewReceiver(client.New(servername, username, passwd), logger)
