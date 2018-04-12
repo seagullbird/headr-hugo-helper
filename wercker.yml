@@ -21,8 +21,8 @@ build:
             cp $WERCKER_CACHE_DIR/hugo /usr/local/bin
           else
             debug "hugo binary not found in cache, will download"
-            wget https://github.com/gohugoio/hugo/releases/download/v0.36.1/hugo_0.36.1_Linux-64bit.tar.gz &&
-            tar -C /usr/local/bin -xzvf hugo_0.36.1_Linux-64bit.tar.gz &&
+            wget https://github.com/gohugoio/hugo/releases/download/v${HUGOVERSION}/hugo_${HUGOVERSION}_Linux-64bit.tar.gz &&
+            tar -C /usr/local/bin -xzvf hugo_${HUGOVERSION}_Linux-64bit.tar.gz &&
             cp $(which hugo) $WERCKER_CACHE_DIR
           fi
           hugo version
@@ -68,17 +68,7 @@ push-image:
     - script:
       name: "Prepare hugo binary"
       code: |
-        if [ -f "$WERCKER_CACHE_DIR/hugo" ]; then
-          debug "hugo binary found, moving to /usr/bin/"
-          mv $WERCKER_CACHE_DIR/hugo /usr/bin/hugo
-        else
-          debug "hugo binary not found, installing..."
-          wget -q https://github.com/gohugoio/hugo/releases/download/v${HUGOVERSION}/hugo_${HUGOVERSION}_Linux-64bit.tar.gz
-          mkdir hugo_binary
-          tar -C hugo_binary/ -xf hugo_${HUGOVERSION}_Linux-64bit.tar.gz
-          mv hugo_binary/hugo /usr/bin/hugo
-          rm -rf hugo_${HUGOVERSION}_Linux-64bit.tar.gz hugo_binary
-        fi
+        cp $WERCKER_CACHE_DIR/hugo /usr/local/bin
         hugo version
     - internal/docker-push:
         working-dir: $WERCKER_ROOT
