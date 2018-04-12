@@ -65,6 +65,21 @@ push-image:
       name: "Move Kubernetes files"
       code: |
         mv k8s-deploy.yaml.template $WERCKER_OUTPUT_DIR
+    - script:
+      name: "Prepare hugo binary"
+      code: |
+        if [ -f "$WERCKER_CACHE_DIR/hugo" ]; then
+          debug "hugo binary found, moving to /usr/bin/"
+          mv $WERCKER_CACHE_DIR/hugo /usr/bin/hugo
+        else
+          debug "hugo binary not found, installing..."
+          wget -q https://github.com/gohugoio/hugo/releases/download/v${HUGOVERSION}/hugo_${HUGOVERSION}_Linux-64bit.tar.gz
+          mkdir hugo_binary
+          tar -C hugo_binary/ -xf hugo_${HUGOVERSION}_Linux-64bit.tar.gz
+          mv hugo_binary/hugo /usr/bin/hugo
+          rm -rf hugo_${HUGOVERSION}_Linux-64bit.tar.gz hugo_binary
+        fi
+        hugo version
     - internal/docker-push:
         working-dir: $WERCKER_ROOT
         env: RABBITMQ_SERVER=${RABBITMQ_SERVER} RABBITMQ_USER=${RABBITMQ_USER} RABBITMQ_PASS=${RABBITMQ_PASS}
