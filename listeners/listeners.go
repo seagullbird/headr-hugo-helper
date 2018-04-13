@@ -42,7 +42,8 @@ func MakeGenerateNewSiteListener(logger log.Logger) receive.Listener {
 			logger.Log("error_desc", "failed to cp site config", "error", err)
 			return
 		}
-		if err := reGenerate(siteSourcePath, sitePublicPath); err != nil {
+		baseURL := "/" + strconv.Itoa(int(event.SiteID)) + "/"
+		if err := reGenerate(baseURL, siteSourcePath, sitePublicPath); err != nil {
 			logger.Log("error_desc", "failed to generate new site public", "error", err)
 			return
 		}
@@ -63,15 +64,16 @@ func MakeReGenerateListener(logger log.Logger) receive.Listener {
 		sitepath := filepath.Join(config.SitesDir, strconv.Itoa(int(event.SiteID)))
 		siteSourcePath := filepath.Join(sitepath, "source")
 		sitePublicPath := filepath.Join(sitepath, "public")
-		if err := reGenerate(siteSourcePath, sitePublicPath); err != nil {
+		baseURL := "/" + strconv.Itoa(int(event.SiteID)) + "/"
+		if err := reGenerate(baseURL, siteSourcePath, sitePublicPath); err != nil {
 			logger.Log("error_desc", "failed to re-generate site", "error", err)
 			return
 		}
 	}
 }
 
-func reGenerate(source, destination string) error {
-	return runCommand("hugo", "--source", source, "--destination", destination)
+func reGenerate(baseURL, source, destination string) error {
+	return runCommand("hugo", "--baseURL", baseURL, "--source", source, "--destination", destination)
 }
 
 func runCommand(command string, arg ...string) error {
