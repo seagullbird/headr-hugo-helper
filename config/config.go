@@ -15,4 +15,6 @@ var (
 	ThemesDir = filepath.Join(DataDir, "themes")
 	// ConfigsDir is the path for initial configs of each theme
 	ConfigsDir = filepath.Join(DataDir, "configs")
+	// Dev indicates whether the environment is dev or prod; it's set during compiling
+	Dev = "unset"
 )

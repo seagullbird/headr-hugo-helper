@@ -52,7 +52,7 @@ build:
           go test -v ./...
     - script:
         name: "go build"
-        code: make build
+        code: DEV=false make build
     - script:
         name: "Copy output files"
         code: |
