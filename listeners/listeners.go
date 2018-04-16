@@ -74,9 +74,9 @@ func MakeReGenerateListener(logger log.Logger) receive.Listener {
 
 func reGenerate(baseURL, source, destination string) error {
 	if config.Dev == "true" {
-		return runCommand("hugo", "--source", source, "--destination", destination)
+		return runCommand("hugo", "--source", source, "--destination", destination, "--themesDir", "../../../themes/")
 	}
-	return runCommand("hugo", "--baseURL", baseURL, "--source", source, "--destination", destination)
+	return runCommand("hugo", "--baseURL", baseURL, "--source", source, "--destination", destination, "--themesDir", "../../../themes/")
 }
 
 func runCommand(command string, arg ...string) error {
